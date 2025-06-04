@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://backyard.ai/schemas/byaf-character.schema.json",
+  "title": "Backyard Archive Format - Character Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "displayName",
+    "isNSFW",
+    "persona",
+    "createdAt",
+    "updatedAt",
+    "loreItems",
+    "images"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "Monotonically increasing archive-format version."
+    },
+    "$schema": {
+      "type": "string",
+      "title": "Schema",
+      "description": "Pointer to the schema against which this document should be validated."
+    },
+    "id": { "type": "string" },
+    "name": {
+      "type": "string",
+      "description": "The shorthand name of the character (often a nickname)."
+    },
+    "displayName": {
+      "type": "string",
+      "description": "The full name of the character."
+    },
+    "isNSFW": { "type": "boolean" },
+    "persona": { "type": "string" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "loreItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "value"],
+        "properties": {
+          "key": { "type": "string" },
+          "value": { "type": "string" }
+        }
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "label"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^images\\/[^\\/]+\\.(png|jpe?g|webp|gif)$",
+            "description": "Relative path to an image inside this character’s images/ folder."
+          },
+          "label": { "type": "string" }
+        }
+      }
+    }
+  }
+}

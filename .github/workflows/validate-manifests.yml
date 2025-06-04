@@ -1,0 +1,48 @@
+name: Validate BYAF Manifests
+
+on:
+  push:
+    paths:
+      - '**/manifest.json'
+      - '**/character.json'
+      - '**/chat*.json'
+      - 'schemas/v1/**'
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Enable Yarn Berry
+        run: |
+          corepack enable
+          yarn set version berry
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Validate top-level manifest.json
+        run: |
+          yarn ajv validate -c ajv-formats \
+            -s schemas/v1/byaf-manifest.schema.json \
+            -d '*/manifest.json'
+
+      - name: Validate character.json files
+        run: |
+          yarn ajv validate -c ajv-formats \
+            -s schemas/v1/byaf-character.schema.json \
+            -d 'characters/*/character.json'
+
+      - name: Validate scenario*.json files
+        run: |
+          yarn ajv validate -c ajv-formats \
+            -s schemas/v1/byaf-scenario.schema.json \
+            -d 'scenarios/scenario*.json'
