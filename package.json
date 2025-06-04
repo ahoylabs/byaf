@@ -1,0 +1,55 @@
+{
+  "name": "byaf",
+  "version": "0.0.0-pre.2",
+  "packageManager": "yarn@4.9.2",
+  "scripts": {
+    "test": "vitest",
+    "lint": "eslint src",
+    "validate-schema": "yarn ajv validate -c ajv-formats -s schemas/v1/byaf-manifest.schema.json -d '*/manifest.json' && yarn ajv validate -c ajv-formats -s schemas/v1/byaf-character.schema.json -d 'characters/*/character.json' && yarn ajv validate -c ajv-formats -s schemas/v1/byaf-scenario.schema.json -d 'scenarios/scenario*.json'",
+    "prepublish": "yarn tsup"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/byaf.d.mts",
+        "default": "./dist/byaf.mjs"
+      },
+      "require": {
+        "types": "./dist/byaf.d.ts",
+        "default": "./dist/byaf.js"
+      }
+    },
+    "./character-image": {
+      "import": {
+        "types": "./dist/character-image.d.mts",
+        "default": "./dist/character-image.mjs"
+      },
+      "require": {
+        "types": "./dist/character-image.d.ts",
+        "default": "./dist/character-image.js"
+      }
+    }
+  },
+  "dependencies": {
+    "exifreader": "^4.31.0",
+    "exiftool-vendored": "^23.7.0",
+    "jszip": "^3.10.1",
+    "sharp": "^0.33.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.28.0",
+    "@types/node": "22.13.10",
+    "ajv-cli": "^5.0.0",
+    "ajv-formats": "^3.0.1",
+    "eslint": "^9.28.0",
+    "file-api": "0.10.4",
+    "filereader": "0.10.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.1",
+    "vite": "5.4.12",
+    "vite-tsconfig-paths": "5.1.3",
+    "vitest": "2.1.8"
+  }
+}
