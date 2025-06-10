@@ -1,6 +1,6 @@
 {
   "name": "byaf",
-  "version": "0.0.0-pre.3",
+  "version": "0.0.0-pre.4",
   "packageManager": "yarn@4.9.2",
   "scripts": {
     "test": "vitest",
@@ -30,6 +30,9 @@
       }
     }
   },
+  "main": "dist/byaf.js",
+  "module": "dist/byaf.mjs",
+  "types": "dist/byaf.d.ts",
   "dependencies": {
     "exifreader": "^4.31.0",
     "exiftool-vendored": "^23.7.0",
