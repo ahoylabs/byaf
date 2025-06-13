@@ -1,6 +1,6 @@
 {
   "name": "byaf",
-  "version": "0.0.0-pre.7",
+  "version": "0.1.0",
   "packageManager": "yarn@4.9.2",
   "scripts": {
     "test": "vitest",
