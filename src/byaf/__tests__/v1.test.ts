@@ -10,7 +10,7 @@ import {
 import { createByaArchive } from '../create-archive'
 import { mkdir, readFile, rmdir, unlink } from 'fs/promises'
 import JSZip from 'jszip'
-import path from 'path'
+import path from 'path/posix'
 import { ByafInputCharacter, ByafInputScenario } from '../types/schemas'
 import { parseByaArchive } from '../parse-archive'
 

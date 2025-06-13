@@ -1,7 +1,7 @@
 import { createWriteStream } from 'fs'
 import { mkdir } from 'fs/promises'
 import JSZip from 'jszip'
-import path from 'path'
+import path from 'path/posix'
 import {
   ByafManifest,
   byafCharacterSchema,

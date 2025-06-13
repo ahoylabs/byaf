@@ -1,5 +1,5 @@
 import fs from 'fs/promises'
-import path from 'path'
+import path from 'path/posix'
 import { describe, expect, test } from 'vitest'
 import { parseCharacterPng } from '../parse-character-png'
 import { isBackyardCharacterExportV2 } from '../types/character-exports'
