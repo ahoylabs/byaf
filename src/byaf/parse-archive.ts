@@ -1,6 +1,6 @@
 import { readFile } from 'fs/promises'
 import JSZip from 'jszip'
-import path from 'path'
+import path from 'path/posix'
 import { z } from 'zod'
 import { iife } from '../utils/iife'
 import {

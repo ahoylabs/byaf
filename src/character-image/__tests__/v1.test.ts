@@ -1,4 +1,4 @@
-import path from 'path'
+import path from 'path/posix'
 import { describe, expect, test } from 'vitest'
 import { parseCharacterPng } from '../parse-character-png'
 import fs from 'fs/promises'
