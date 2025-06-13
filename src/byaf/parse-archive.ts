@@ -11,12 +11,13 @@ import {
   byafManifestSchema,
   byafScenarioSchema,
   ByafCharacter,
+  ByafOutputScenario,
 } from './types/schemas'
 
 export type ByafArchive = {
   manifest: ByafManifest
   character: ByafOutputCharacter
-  scenarios: ByafScenario[]
+  scenarios: ByafOutputScenario[]
 }
 
 /**
@@ -157,7 +158,7 @@ export const parseByaArchive = async (
   }
 
   // Validate and read scenarios
-  const scenarios: ByafScenario[] = []
+  const scenarios: ByafOutputScenario[] = []
   for (const scenarioPath of manifest.scenarios) {
     const validateFilePathResult = validateFilePath(
       scenarioPath,
@@ -179,12 +180,34 @@ export const parseByaArchive = async (
       return { error: scenario.error }
     }
 
-    scenarios.push(scenario)
+    const backgroundImage = await iife(async () => {
+      if (scenario.backgroundImage) {
+        const file = zip.file(scenario.backgroundImage)
+        if (!file) {
+          return {
+            error: `Referenced background image not found in archive: ${scenario.backgroundImage}`,
+          }
+        }
+        const fileName = path.basename(scenario.backgroundImage)
+        const buffer = await file.async('arraybuffer')
+        return { file: new File([buffer], fileName) }
+      }
+      return undefined
+    })
+
+    if (backgroundImage && 'error' in backgroundImage) {
+      return { error: backgroundImage.error }
+    }
+
+    scenarios.push({
+      ...scenario,
+      backgroundImage: backgroundImage?.file,
+    })
   }
 
   // Read character images
   const imageDir = path.dirname(manifest.characters[0])
-  const images: { label: string; arrayBuffer: ArrayBuffer }[] = []
+  const images: { label: string; file: File }[] = []
 
   for (const item of character.images) {
     const imagePath = path.join(imageDir, item.path)
@@ -205,7 +228,9 @@ export const parseByaArchive = async (
       return { error: buffer.error }
     }
 
-    images.push({ label: item.label, arrayBuffer: buffer })
+    const fileName = path.basename(imagePath)
+
+    images.push({ label: item.label, file: new File([buffer], fileName) })
   }
 
   return {

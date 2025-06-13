@@ -33,6 +33,10 @@
       "title": "Schema",
       "description": "Pointer to the schema against which this document should be validated."
     },
+    "title": {
+      "type": "string",
+      "description": "Optional. The title of the scenario."
+    },
     "model": {
       "type": "string",
       "description": "Optional. The model most recently used in the chat."

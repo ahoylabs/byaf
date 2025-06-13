@@ -4,18 +4,20 @@ import JSZip from 'jszip'
 import path from 'path'
 import {
   ByafManifest,
-  ByafScenario,
   byafCharacterSchema,
   byafManifestSchema,
   byafScenarioSchema,
   ByafInputCharacter,
   ByafCharacter,
+  ByafInputScenario,
+  ByafScenario,
 } from './types/schemas'
+import { iife } from '../utils/iife'
 
 type CreateArchiveArgs = {
   outputPath: string
   character: ByafInputCharacter
-  scenarios: Array<ByafScenario>
+  scenarios: Array<ByafInputScenario>
   author?: {
     name: string
     backyardURL: string
@@ -112,9 +114,31 @@ export const createByaArchive = async (
   )
 
   for (let i = 0; i < args.scenarios.length; i++) {
+    const scenario = args.scenarios[i]
+    const backgroundImage = await iife(async () => {
+      if (scenario.backgroundImage) {
+        const imageName = path.basename(scenario.backgroundImage.name)
+        const extension = path.extname(imageName)
+        const imageData = await scenario.backgroundImage.arrayBuffer()
+        zip.file(
+          `scenarios/scenario${i + 1}-background${extension}`,
+          imageData,
+          {
+            compression: 'STORE',
+          },
+        )
+        return `scenarios/scenario${i + 1}-background${extension}`
+      }
+    })
+
+    const outputScenario: ByafScenario = {
+      ...scenario,
+      backgroundImage,
+    }
+
     zip.file(
       `scenarios/scenario${i + 1}.json`,
-      JSON.stringify(args.scenarios[i], null, 2),
+      JSON.stringify(outputScenario, null, 2),
       { compression: 'STORE' },
     )
   }

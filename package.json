@@ -1,10 +1,10 @@
 {
   "name": "byaf",
-  "version": "0.0.0-pre.4",
+  "version": "0.0.0-pre.7",
   "packageManager": "yarn@4.9.2",
   "scripts": {
     "test": "vitest",
-    "lint": "eslint src",
+    "lint": "tsc --noEmit && eslint src",
     "validate-schema": "yarn ajv validate -c ajv-formats -s schemas/v1/byaf-manifest.schema.json -d '*/manifest.json' && yarn ajv validate -c ajv-formats -s schemas/v1/byaf-character.schema.json -d 'characters/*/character.json' && yarn ajv validate -c ajv-formats -s schemas/v1/byaf-scenario.schema.json -d 'scenarios/scenario*.json'",
     "prepublish": "yarn tsup"
   },

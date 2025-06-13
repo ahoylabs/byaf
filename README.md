@@ -73,7 +73,7 @@ The library offers two main functions for parsing and creating archives:
 #### Parsing Archives
 
 ```typescript
-import { parseByaArchive } from 'byaf/dist/byaf'
+import { parseByaArchive } from 'byaf'
 
 // Parse a .byaf file
 const result = await parseByaArchive('path/to/archive.byaf')
@@ -99,7 +99,7 @@ The `parseByaArchive` function:
 #### Creating Archives
 
 ```typescript
-import { createByaArchive } from 'byaf/dist/byaf'
+import { createByaArchive } from 'byaf'
 
 // Create a new .byaf file
 const result = await createByaArchive(

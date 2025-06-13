@@ -22,7 +22,6 @@ export const byafCharacterSchema = z.object({
     }),
   ),
   images: z.array(z.object({ path: z.string(), label: z.string() })),
-  backgroundImage: z.string().optional(),
 })
 
 export type ByafCharacter = z.infer<typeof byafCharacterSchema>
@@ -30,7 +29,7 @@ export type ByafInputCharacter = Omit<ByafOutputCharacter, 'images'> & {
   images: { file: File; label: string }[]
 }
 export type ByafOutputCharacter = Omit<ByafCharacter, 'images'> & {
-  images: { arrayBuffer: ArrayBuffer; label: string }[]
+  images: { file: File; label: string }[]
 }
 
 export const isByafCharacter = <Type extends 'input' | 'output'>(
@@ -117,6 +116,7 @@ const messageSchema = z.discriminatedUnion('type', [
 
 export const byafScenarioSchema = z.object({
   schemaVersion: z.literal(1),
+  title: z.string().optional().describe('Optional. The title of the scenario'),
   model: z
     .string()
     .optional()
@@ -163,9 +163,17 @@ export const byafScenarioSchema = z.object({
     .nullable(),
   grammar: z.string().nullable().describe('Optional grammar rules'),
   messages: z.array(messageSchema),
+  backgroundImage: z.string().optional(),
 })
 
 export type ByafScenario = z.infer<typeof byafScenarioSchema>
+export type ByafInputScenario = Omit<ByafScenario, 'backgroundImage'> & {
+  backgroundImage?: File | undefined
+}
+
+export type ByafOutputScenario = Omit<ByafScenario, 'backgroundImage'> & {
+  backgroundImage?: File | undefined
+}
 
 export const isByafScenario = (data: unknown): data is ByafScenario => {
   return byafScenarioSchema.safeParse(data).success

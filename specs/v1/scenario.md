@@ -39,7 +39,8 @@ The scenario manifest MUST NOT contain any properties not defined in this specif
 ### Optional Fields
 
 - `$schema` (string): URI reference to the JSON schema for validation.
-- `model` (string): The model most recently used in the chat.
+- `title` (string): The title of the scenario.
+- `model` (string): The model most recently used in the scenario.
 - `backgroundImage` (string): Path to a background image for the scenario.
 
 ## Field Details

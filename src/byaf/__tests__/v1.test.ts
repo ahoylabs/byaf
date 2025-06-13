@@ -11,7 +11,7 @@ import { createByaArchive } from '../create-archive'
 import { mkdir, readFile, rmdir, unlink } from 'fs/promises'
 import JSZip from 'jszip'
 import path from 'path'
-import { ByafScenario, ByafInputCharacter } from '../types/schemas'
+import { ByafInputCharacter, ByafInputScenario } from '../types/schemas'
 import { parseByaArchive } from '../parse-archive'
 
 // Helper to read and parse a ZIP file
@@ -82,8 +82,9 @@ describe('createByaArchive', () => {
       ],
     }
 
-    const scenario: ByafScenario = {
+    const scenario: ByafInputScenario = {
       schemaVersion: 1,
+      title: 'Test Scenario',
       formattingInstructions: 'You are a test bot',
       minP: 0.1,
       minPEnabled: true,
@@ -98,7 +99,7 @@ describe('createByaArchive', () => {
         { characterID: 'test123', text: 'Hello, I am a test bot!' },
       ],
       narrative: 'A test scenario',
-      promptTemplate: 'general',
+      promptTemplate: null,
       grammar: null,
       messages: Array(100).fill({
         type: 'human',
@@ -106,7 +107,7 @@ describe('createByaArchive', () => {
         updatedAt: new Date().toISOString(),
         text: 'Hello, I am a test human!',
       }),
-    }
+    } satisfies ByafInputScenario
 
     await createByaArchive({
       outputPath: ctx.OUTPUT_PATH,
@@ -146,6 +147,7 @@ describe('createByaArchive', () => {
       'scenarios/scenario1.json',
     )) as any
     expect(scenarioData.schemaVersion).toBe(1)
+    expect(scenarioData.title).toBe(scenario.title)
     expect(scenarioData.formattingInstructions).toBe(
       scenario.formattingInstructions,
     )
@@ -186,7 +188,7 @@ describe('createByaArchive', () => {
       ],
     }
 
-    const scenario: ByafScenario = {
+    const scenario: ByafInputScenario = {
       schemaVersion: 1,
       formattingInstructions: 'You are a test bot',
       minP: 0.1,
@@ -228,6 +230,9 @@ describe('createByaArchive', () => {
           text: 'Hello, I am a test human!',
         },
       ],
+      backgroundImage: await pathToFile(
+        path.join(__dirname, 'images/image1.jpg'),
+      ),
     }
 
     const author = {
@@ -270,6 +275,10 @@ describe('createByaArchive', () => {
         text: 'Hello, I am a test human!',
       },
     ])
+
+    expect(scenario1.backgroundImage).toEqual(
+      'scenarios/scenario1-background.jpg',
+    )
 
     // Validate that images are included in the archive
     expect(
@@ -318,7 +327,7 @@ describe('createByaArchive', () => {
       ],
     }
 
-    const baseScenario: ByafScenario = {
+    const baseScenario: ByafInputScenario = {
       schemaVersion: 1,
       formattingInstructions: 'You are a test bot',
       minP: 0.1,
@@ -427,6 +436,7 @@ describe('parseByaArchive', () => {
     expect(archive.scenarios[0].narrative).toBe('A test scenario')
     expect(archive.scenarios[0].messages.length).toBe(100)
     expect(archive.scenarios[0].messages[0].type).toBe('human')
+    expect(archive.scenarios[0].backgroundImage).toBeUndefined()
     expect(archive.character.schemaVersion).toBe(1)
     expect(archive.character.id).toBe('test123')
     expect(archive.character.name).toBe('TestBot')
@@ -434,7 +444,7 @@ describe('parseByaArchive', () => {
     expect(archive.character.isNSFW).toBe(false)
     expect(archive.character.persona).toBe('A test character')
     expect(archive.character.images).toEqual([
-      { label: 'avatar', arrayBuffer: expect.any(ArrayBuffer) },
+      { label: 'avatar', file: expect.any(File) },
     ])
   })
   test('parses valid archive 2', async () => {
@@ -454,6 +464,7 @@ describe('parseByaArchive', () => {
     expect(archive.scenarios[0].narrative).toBe('A test scenario')
     expect(archive.scenarios[0].messages.length).toBe(2)
     expect(archive.scenarios[0].messages[0].type).toBe('ai')
+    expect(archive.scenarios[0].backgroundImage).toEqual(expect.any(File))
     expect(archive.character.schemaVersion).toBe(1)
     expect(archive.character.id).toBe('test123')
     expect(archive.character.name).toBe('TestBot')
@@ -461,8 +472,8 @@ describe('parseByaArchive', () => {
     expect(archive.character.isNSFW).toBe(false)
     expect(archive.character.persona).toBe('A test character')
     expect(archive.character.images).toEqual([
-      { label: 'avatar', arrayBuffer: expect.any(ArrayBuffer) },
-      { label: '', arrayBuffer: expect.any(ArrayBuffer) },
+      { label: 'avatar', file: expect.any(File) },
+      { label: '', file: expect.any(File) },
     ])
   })
   test('parses valid archive 3', async () => {
@@ -487,14 +498,16 @@ describe('parseByaArchive', () => {
     expect(archive.scenarios[1].narrative).toBe('Second scenario')
     expect(archive.scenarios[0].messages.length).toBe(100)
     expect(archive.scenarios[0].messages[0].type).toBe('ai')
+    expect(archive.scenarios[0].backgroundImage).toBeUndefined()
+    expect(archive.scenarios[1].backgroundImage).toBeUndefined()
     expect(archive.character.schemaVersion).toBe(1)
     expect(archive.character.id).toBe('test123')
     expect(archive.character.name).toBe('TestBot')
     expect(archive.character.displayName).toBe('Test Bot')
     expect(archive.character.images).toEqual([
-      { label: 'avatar', arrayBuffer: expect.any(ArrayBuffer) },
-      { label: 'image1', arrayBuffer: expect.any(ArrayBuffer) },
-      { label: '', arrayBuffer: expect.any(ArrayBuffer) },
+      { label: 'avatar', file: expect.any(File) },
+      { label: 'image1', file: expect.any(File) },
+      { label: '', file: expect.any(File) },
     ])
   })
 })
